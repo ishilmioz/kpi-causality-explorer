@@ -20,7 +20,7 @@ export interface GenerateOptions {
 const KPI_KEYS: KpiKey[] = KPI_DEFINITIONS.map((k) => k.key);
 
 const KPI_BASELINE_RANGE: Record<KpiKey, { min: number; max: number }> = {
-  conversion_rate: { min: 0.015, max: 0.045 },
+  conversion_rate: { min: 0.04, max: 0.10 },
   revenue: { min: 20000, max: 80000 },
   churn_rate: { min: 0.03, max: 0.12 },
   DAU: { min: 5000, max: 50000 },
@@ -44,29 +44,30 @@ type SensitivityConfig = {
 
 const SENSITIVITY: SensitivityConfig = {
   conversion_rate: {
-    latency_change: -0.3,
-    crash_rate_change: -0.1,
-    traffic_change: 0.05,
-    price_change: -0.15,
-    campaign_intensity: 0.08,
+    latency_change: -1.2,       
+    crash_rate_change: -0.8,     
+    traffic_change: 0.25,        
+    price_change: -0.6,          
+    campaign_intensity: 0.35, 
   },
   revenue: {
-    latency_change: -0.15,
-    traffic_change: 0.5,
-    price_change: 0.4,
-    campaign_intensity: 0.12,
+    latency_change: -0.5,
+    traffic_change: 1.2,
+    price_change: 0.9,
+    campaign_intensity: 0.6,
   },
   churn_rate: {
-    latency_change: 0.2,
-    crash_rate_change: 0.18,
-    price_change: 0.1,
+    latency_change: 0.7,
+    crash_rate_change: 0.9,
+    price_change: 0.4,
   },
   DAU: {
-    traffic_change: 0.8,
-    campaign_intensity: 0.5,
-    crash_rate_change: -0.25,
+    traffic_change: 1.1,
+    campaign_intensity: 0.9,
+    crash_rate_change: -0.6,
   },
 };
+
 
 const DRIVER_SEGMENT_MULTIPLIER: Partial<
   Record<DriverKey, Partial<Record<string, number>>>
@@ -178,20 +179,24 @@ function computeTrendFactor(kpi: KpiKey, t: number, totalDays: number): number {
 
   switch (kpi) {
     case "conversion_rate":
-      return 0.03 * progress; 
+      // Çok hafif uzun dönem iyileşme
+      return 0.015 * progress; // ~%1.5
     case "revenue":
-      return 0.08 * progress; 
+      // Revenue biraz daha trendli gidebilir
+      return 0.04 * progress; // ~%4
     case "churn_rate":
-      return -0.02 * progress; 
+      // Hafif iyileşme (düşüş)
+      return -0.01 * progress; // ~%1
     case "DAU":
-      return 0.1 * progress; 
+      return 0.05 * progress; // ~%5
   }
 }
 
 function computeSeasonalityFactor(t: number): number {
-  // Haftalık seasonality
-  return 0.03 * Math.sin((2 * Math.PI * t) / 7);
+  // Haftalık seasonality, ama hafif
+  return 0.01 * Math.sin((2 * Math.PI * t) / 7);
 }
+
 
 
 interface DriverEffectArgs {
@@ -286,11 +291,13 @@ function generateSeriesForSegmentKpi({
       totalDays,
     });
 
-    const baseValue =
-      baseline *
-      (1 + trendFactor) *
-      (1 + seasonalityFactor) *
-      (1 + driverFactor);
+    // Additive yaklaşım: trend + seasonality + driver birlikte çalışıyor
+    let combinedFactor = 1 + trendFactor + seasonalityFactor + driverFactor;
+
+    // Çok saçma negatif/çok düşük değerleri kes
+    combinedFactor = clamp(combinedFactor, 0.2, 3);
+
+    const baseValue = baseline * combinedFactor;
 
     const noisyValue = addNoise(kpi, baseValue);
 
@@ -299,8 +306,7 @@ function generateSeriesForSegmentKpi({
       value: postProcessKpiValue(kpi, noisyValue),
     };
   });
-}
-
+} 
 
 export function generateDataset(
   scenario: ScenarioInputs,

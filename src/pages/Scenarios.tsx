@@ -215,6 +215,35 @@ interface FieldNumberProps {
 }
 
 function FieldNumber({ label, helper, value, onChange }: FieldNumberProps) {
+  // Input'ta göstereceğimiz değer:
+  // Eğer value === 0 ise "" gösteriyoruz (placeholder gibi davranması için)
+  const displayValue = value === 0 ? "" : String(value);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const raw = e.target.value;
+
+    // Sadece sayı ve negatif işaretine izin ver
+    const cleaned = raw.replace(/[^0-9-]/g, "");
+
+    // Eğer kullanıcı sadece "-" girdiyse, geçici olarak onu izin veriyoruz
+    if (cleaned === "-") {
+      onChange(0);
+      return;
+    }
+
+    // Eğer tamamen boşsa 0 olarak sakla
+    if (cleaned === "") {
+      onChange(0);
+      return;
+    }
+
+    // Normal sayı parse et
+    const numericValue = Number(cleaned);
+    if (!isNaN(numericValue)) {
+      onChange(numericValue);
+    }
+  };
+
   return (
     <div style={{ marginBottom: "10px" }}>
       <label
@@ -229,21 +258,10 @@ function FieldNumber({ label, helper, value, onChange }: FieldNumberProps) {
       </label>
 
       <input
-        type="text"    
-        value={value === 0 ? "" : value}  
+        type="text"
+        value={displayValue}
         placeholder="0"
-        onChange={(e) => {
-          const raw = e.target.value;
-
-          const cleaned = raw.replace(/[^0-9-]/g, "");
-
-          if (cleaned === "" || cleaned === "-") {
-            onChange(0);
-            return;
-          }
-
-          onChange(Number(cleaned));
-        }}
+        onChange={handleChange}
         style={{
           width: "100%",
           padding: "6px 8px",
@@ -267,4 +285,6 @@ function FieldNumber({ label, helper, value, onChange }: FieldNumberProps) {
     </div>
   );
 }
+
+
 
