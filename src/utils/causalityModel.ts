@@ -36,7 +36,6 @@ function getDriverRelevance(driver: DriverKey): number {
   }
 }
 
-// Senaryodaki driver büyüklüğünü 0..1 aralığına normalize edelim
 function getDriverMagnitudeWeight(
   driver: DriverKey,
   scenario: ScenarioInputs
@@ -45,7 +44,6 @@ function getDriverMagnitudeWeight(
 
   switch (driver) {
     case "campaign_intensity": {
-      // 50 nötr, 0 veya 100 aşırı → |(x - 50)| / 50 → 0..1
       mag = Math.min(
         1,
         Math.abs(scenario.campaign_intensity - 50) / 50
@@ -57,15 +55,13 @@ function getDriverMagnitudeWeight(
       break;
     }
     default: {
-      // latency_change, crash_rate_change, traffic_change, price_change
-      const raw = scenario[driver] as number; // % cinsinden
-      // 0–50% arası → 0..1, 50+'de 1'e clamp
+      const raw = scenario[driver] as number; 
       mag = Math.min(1, Math.abs(raw) / 50);
       break;
     }
   }
 
-  return mag; // 0..1
+  return mag; 
 }
 
 
@@ -110,8 +106,6 @@ for (const corr of correlations) {
   const relevanceWeight = getDriverRelevance(driver);
   const magnitudeWeight = getDriverMagnitudeWeight(driver, scenario);
 
-  // V1 formülü (güncellenmiş):
-  // raw = |corr| * (0.5 + 0.5 * deltaScore) * relevance * magnitude * anomalyBoost
   const rawScore =
     absCorr *
     (0.5 + 0.5 * deltaScore) *

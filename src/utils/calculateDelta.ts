@@ -5,7 +5,6 @@ import type {
   DeltaWindow,
 } from "../types/domain";
 
-// Tüm segmentler üzerinden ortalama KPI time series (calculateCorrelation ile tutarlı)
 function buildAggregatedKpiSeries(
   dataset: GeneratedDataset,
   kpi: KpiKey
@@ -39,15 +38,14 @@ function computeWindowAvg(
   return sum / windowSize;
 }
 
-// KPI özel anomaly threshold (V1 için kaba ama iş görür)
 function getAnomalyThreshold(kpi: KpiKey): number {
   switch (kpi) {
     case "conversion_rate":
     case "churn_rate":
-      return 0.05; // %5 değişim
+      return 0.05; 
     case "revenue":
     case "DAU":
-      return 0.1; // %10 değişim
+      return 0.1; 
   }
 }
 
@@ -56,7 +54,6 @@ export function calculateDeltas(
 ): DeltaResult[] {
   const results: DeltaResult[] = [];
 
-  // Varsayım: tüm serilerin uzunluğu aynı
   const anySeries = dataset.series[0];
   if (!anySeries) return results;
 
@@ -64,15 +61,12 @@ export function calculateDeltas(
   const windowSize = 7;
 
   if (totalLength < windowSize * 2) {
-    // 14 günden az veri varsa delta hesaplamıyoruz
     return results;
   }
 
-  // Son 7 gün ve önceki 7 gün indexleri
   const lastStart = totalLength - windowSize;
   const prevStart = totalLength - windowSize * 2;
 
-  // Tarih aralıklarını noktaların tarihinden al
   const lastStartDate = anySeries.points[lastStart].date;
   const lastEndDate = anySeries.points[totalLength - 1].date;
   const prevStartDate = anySeries.points[prevStart].date;
@@ -87,7 +81,7 @@ export function calculateDeltas(
 
     const rawDelta = lastAvg - prevAvg;
     const relDelta =
-      prevAvg === 0 ? 0 : rawDelta / prevAvg; // relative change
+      prevAvg === 0 ? 0 : rawDelta / prevAvg; 
 
     const threshold = getAnomalyThreshold(kpi);
     const isAnomaly = Math.abs(relDelta) >= threshold;
@@ -106,10 +100,10 @@ export function calculateDeltas(
 
     results.push({
       kpi,
-      segmentId: undefined, // V1: aggregated, segment bazlı delta'yı V2'de yaparsın
+      segmentId: undefined, 
       lastWindow,
       prevWindow,
-      delta: relDelta, // relative delta (örn: -0.08 = %8 düşüş)
+      delta: relDelta, 
       isAnomaly,
     });
   }

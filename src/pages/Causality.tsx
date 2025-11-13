@@ -28,7 +28,6 @@ export function Causality() {
         <strong>{selectedKpiDef ? selectedKpiDef.label : selectedKpi}</strong>
       </p>
 
-      {/* ------------- CORRELATION TABLE ------------- */}
       {filtered.length === 0 ? (
         <p>No correlation data yet. Go to Scenarios and click "Generate Data".</p>
       ) : (
@@ -77,7 +76,6 @@ export function Causality() {
         </table>
       )}
 
-      {/* ---- Delta & Anomaly Section ---- */}
       <section style={{ marginTop: "24px" }}>
         <h2>Delta (Last 7 vs Previous 7)</h2>
 

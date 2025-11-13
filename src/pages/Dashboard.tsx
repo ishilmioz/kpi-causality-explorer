@@ -1,5 +1,3 @@
-// src/pages/Dashboard.tsx
-
 import { KPI_DEFINITIONS } from "../types/domain";
 import { useKpiStore } from "../state/useKpiStore";
 import { TrendChart } from "../charts/TrendChart";
@@ -9,7 +7,6 @@ export function Dashboard() {
 
   const selectedKpiDef = KPI_DEFINITIONS.find((k) => k.key === selectedKpi);
 
-  // --------- Aggregated trend data for selected KPI ---------
   let chartData: { date: string; value: number }[] = [];
 
   if (dataset) {
@@ -31,7 +28,6 @@ export function Dashboard() {
     }
   }
 
-  // --------- Last value & delta info for selected KPI ---------
   const lastValue =
     chartData.length > 0 ? chartData[chartData.length - 1].value : null;
 
@@ -49,7 +45,6 @@ export function Dashboard() {
     <div>
       <h1>Dashboard</h1>
 
-      {/* KPI selector */}
       <section>
         <h2>Selected KPI</h2>
         <div style={{ display: "flex", gap: "8px", marginBottom: "12px" }}>
@@ -76,7 +71,6 @@ export function Dashboard() {
         </p>
       </section>
 
-      {/* Dataset status */}
       <section style={{ marginTop: "16px" }}>
         <h2>Dataset Status</h2>
         {dataset ? (
@@ -90,7 +84,6 @@ export function Dashboard() {
         )}
       </section>
 
-      {/* Trend chart */}
       <section style={{ marginTop: "24px" }}>
         <h2>KPI Trend (Aggregated)</h2>
         {!dataset || chartData.length === 0 ? (
@@ -100,7 +93,6 @@ export function Dashboard() {
         )}
       </section>
 
-      {/* KPI Summary */}
       <section style={{ marginTop: "24px" }}>
         <h2>KPI Summary</h2>
 

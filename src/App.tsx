@@ -26,19 +26,21 @@ export default function App() {
   };
 
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        backgroundColor: "#f3f4f6",
-      }}
-    >
-      <div
-        style={{
-          maxWidth: "960px",
-          margin: "0 auto",
-          padding: "24px 16px 40px",
-        }}
-      >
+<div
+  style={{
+    minHeight: "100vh",
+    backgroundColor: "#e5e7eb", 
+  }}
+>
+
+     <div
+  style={{
+    maxWidth: "1100px",
+    margin: "0 auto",
+    padding: "32px 24px 48px",
+  }}
+>
+
         {/* App header */}
 <header
   style={{
@@ -70,6 +72,9 @@ export default function App() {
     </p>
   </div>
 </header>
+
+<div style={{ height: "8px" }} />
+
 
 
         <nav
@@ -103,15 +108,16 @@ export default function App() {
           />
         </nav>
 
-        <main
-          style={{
-            backgroundColor: "#fff",
-            border: "1px solid #ddd",
-            borderRadius: "8px",
-            padding: "16px 20px 20px",
-            boxShadow: "0 4px 10px rgba(0,0,0,0.04)",
-          }}
-        >
+      <main
+        style={{
+        backgroundColor: "#f9fafb",         
+        border: "1px solid #d1d5db",        
+        borderRadius: "10px",
+        padding: "20px 24px 24px",
+        boxShadow: "0 8px 20px rgba(15,23,42,0.06)",
+        }}
+      >
+
           {renderPage()}
         </main>
       </div>
@@ -132,9 +138,9 @@ function NavButton({ label, active, onClick }: NavButtonProps) {
       style={{
         padding: "6px 12px",
         borderRadius: "999px",
-        border: active ? "2px solid #000" : "1px solid #ccc",
-        backgroundColor: active ? "#000" : "#f8f8f8",
-        color: active ? "#fff" : "#333",
+        border: active ? "2px solid #111827" : "1px solid #cbd5e1",
+        backgroundColor: active ? "#111827" : "#e5e7eb",
+        color: active ? "#fff" : "#111827",
         fontSize: "0.9rem",
         cursor: "pointer",
       }}
